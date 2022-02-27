@@ -1,5 +1,8 @@
 event:
-  search_re: "Pineo( - (?<type>(\\w+\\s+)+)(?<assigned_person>\\(\\w+\\))?)?"
+  search:
+    re: "Pineo( - (?P<type>(\\w+\\s+)+)(\\((?P<assigned_person>\\w+)\\))?)?"
+    type_group: type
+    assigned_person_group: assigned_person
   # Types should be in lower case and ascii characters
   types:
     - tic

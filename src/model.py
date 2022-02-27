@@ -1,5 +1,6 @@
 import dataclasses
 import datetime
+from typing import ClassVar
 
 import dataclasses_json
 import dateutil.parser
@@ -42,3 +43,13 @@ class CalendarEvent(dataclasses_json.DataClassJsonMixin):
     updated: datetime.datetime = _create_datetime_field()
     location: str | None = None
     recurring_event_id: str | None = None
+
+
+@dataclasses.dataclass(frozen=True)
+class CalendarEventMetaData:
+    UNKNOWN_TYPE: ClassVar[str] = "unknown"
+
+    data: CalendarEvent
+    normalized_summary: str
+    type: str = UNKNOWN_TYPE
+    assigned_person: str | None = None

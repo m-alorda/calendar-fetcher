@@ -1,0 +1,13 @@
+event:
+  search_re: "Pineo( - (?<type>(\\w+\\s+)+)(?<assigned_person>\\(\\w+\\))?)?"
+  # Types should be in lower case and ascii characters
+  types:
+    - tic
+    - genero
+    - salud
+    - inclusion social
+    - institucional
+    - medioambiente
+    - taller participacion
+    - cooperacion internacional
+    - taller de habilidades sociales

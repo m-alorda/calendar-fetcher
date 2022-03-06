@@ -13,9 +13,14 @@ def _create_datetime_field() -> datetime.datetime:
         return date.isoformat() + "Z"
 
     def datetime_decoder(date_obj: dict | str):
-        return dateutil.parser.parse(
-            date_obj["dateTime"] if isinstance(date_obj, dict) else date_obj
-        )
+        if isinstance(date_obj, dict):
+            if "dateTime" in date_obj:
+                date_str = date_obj["dateTime"]
+            else:
+                date_str = date_obj["date"]
+        else:
+            date_str = date_obj
+        return dateutil.parser.parse(date_str)
 
     return dataclasses.field(
         metadata=dataclasses_json.config(

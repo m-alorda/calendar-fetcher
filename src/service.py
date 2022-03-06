@@ -35,25 +35,49 @@ def _format_as_zulu_date(date: datetime.datetime) -> str:
     return f"{date.isoformat()}Z"
 
 
-def _get_formatted_current_time() -> str:
-    return _format_as_zulu_date(datetime.datetime.utcnow())
-
-
-def _get_formatted_first_day_of_current_year() -> str:
-    return _format_as_zulu_date(
-        datetime.datetime.utcnow().replace(
-            month=1,
-            day=1,
-            hour=0,
-            minute=0,
-            second=0,
-            microsecond=0,
-        )
+def _replace_with_first_day_of_the_year(date: datetime.datetime) -> datetime.datetime:
+    return date.replace(
+        month=1,
+        day=1,
+        hour=0,
+        minute=0,
+        second=0,
+        microsecond=0,
     )
 
 
 def get_past_year_events() -> Iterator[model.CalendarEvent]:
     """Retrieves the events that have taken place since the start of the current year
+
+    Raises:
+        googleapiclient.errors.HttpError
+    """
+    current_time = datetime.datetime.utcnow()
+    yield from get_events(
+        start_date=_replace_with_first_day_of_the_year(current_time),
+        end_date=current_time,
+    )
+
+
+def get_current_year_events() -> Iterator[model.CalendarEvent]:
+    """Retrieves all of the current year events
+
+    Raises:
+        googleapiclient.errors.HttpError
+    """
+    current_time = datetime.datetime.utcnow()
+    yield from get_events(
+        start_date=_replace_with_first_day_of_the_year(current_time),
+        end_date=_replace_with_first_day_of_the_year(
+            current_time.replace(year=current_time.year + 1)
+        ),
+    )
+
+
+def get_events(
+    start_date: datetime.datetime, end_date: datetime.datetime
+) -> Iterator[model.CalendarEvent]:
+    """Retrieves the events that have taken place between `start_date` and `end_date`
 
     Raises:
         googleapiclient.errors.HttpError
@@ -66,8 +90,8 @@ def get_past_year_events() -> Iterator[model.CalendarEvent]:
         service.events()
         .list(
             calendarId=config.secret_config["calendarId"],
-            timeMin=_get_formatted_first_day_of_current_year(),
-            timeMax=_get_formatted_current_time(),
+            timeMin=_format_as_zulu_date(start_date),
+            timeMax=_format_as_zulu_date(end_date),
             singleEvents=True,
             orderBy="startTime",
         )

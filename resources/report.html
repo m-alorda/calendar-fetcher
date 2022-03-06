@@ -31,11 +31,15 @@
           <td>{{ event.readable_name }}</td>
           <td>{{ event.current_progress }} / {{ event.annual_minimum }}</td>
           <td>
+            {% if event.dates|length > 0 %}
             <ul class="list-group">
               {% for event_date in event.dates %}
               <li class="list-group-item">{{ event_date }}</li>
               {% endfor %}
             </ul>
+            {% else %}
+            <p class="text-body">-</p>
+            {% endif %}
           </td>
         </tr>
         {% endfor %}

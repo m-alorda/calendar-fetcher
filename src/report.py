@@ -17,13 +17,13 @@ class EventReportData:
     readable_name: str
     current_progress: int
     annual_minimum: int
-    dates: Iterator[datetime.date]
+    dates: tuple[datetime.date, ...]
 
 
 @dataclasses.dataclass(frozen=True)
 class ReportData:
     current_date: datetime.date
-    events: Iterable[EventReportData]
+    events: tuple[EventReportData, ...]
 
 
 def _create_report_data(
@@ -38,10 +38,12 @@ def _create_report_data(
                 readable_name=event_type_data["readable_name"],
                 current_progress=len(events_data),
                 annual_minimum=event_type_data["annual_minimum"],
-                dates=events_data | pipe.map(lambda event: event.data.start.date()),
+                dates=tuple(
+                    events_data | pipe.map(lambda event: event.data.start.date())
+                ),
             )
         )
-    return ReportData(current_date=datetime.date.today(), events=events)
+    return ReportData(current_date=datetime.date.today(), events=tuple(events))
 
 
 def _generate_rendered_report_lines(data: ReportData) -> Iterator[str]:

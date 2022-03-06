@@ -110,6 +110,9 @@ def generate_report(
         tmp_html_report_path.open(encoding="utf-8") as src_file,
         dest_file_path.open("wb") as dest_file,
     ):
+        # TODO Fix bootstrap not loading correctly on xhtml2pdf: 
+        # "Selector name or qualifier expected:: ('', '\'@charset "UTF-8";:r')"
         xhtml2pdf.pisa.CreatePDF(src_file, dest_file)
+    # TODO Delete the temporary file once the pdf report has been created
     # tmp_html_report_path.unlink()
     return dest_file_path

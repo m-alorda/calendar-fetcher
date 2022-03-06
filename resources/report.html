@@ -16,9 +16,9 @@
   <body>
     <div class="container my-2 col-lg-10">
       <h1 class="h1">CRJ Pineo</h1>
-      <p class="text-body">
+      <h2 class="h2">
         Actividades desarrolladas hasta el día {{ data.current_date }}
-      </p>
+      </h2>
       <table class="table table-hover table-striped">
         <tr>
           <th>Objetivo</th>
@@ -43,6 +43,23 @@
         </tr>
         {% endfor %}
       </table>
+      {% if data.unknown_events|length > 0 %}
+      <div class="container">
+        <h2 class="h2">Otras actividades</h2>
+        <table class="table table-hover table-striped">
+          <tr>
+            <th>Nombre</th>
+            <th>Fecha</th>
+          </tr>
+          {% for unknown_event in data.unknown_events %}
+          <tr>
+            <td>{{ unknown_event.summary }}</td>
+            <td>{{ unknown_event.date }}</td>
+          </tr>
+          {% endfor %}
+        </table>
+      </div>
+      {% endif %}
     </div>
   </body>
 </html>

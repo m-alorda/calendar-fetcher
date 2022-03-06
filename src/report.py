@@ -21,14 +21,21 @@ class EventReportData:
 
 
 @dataclasses.dataclass(frozen=True)
+class UnknownEventReportData:
+    summary: str
+    date: datetime.date
+
+
+@dataclasses.dataclass(frozen=True)
 class ReportData:
     current_date: datetime.date
     events: tuple[EventReportData, ...]
+    unknown_events: tuple[UnknownEventReportData, ...]
 
 
-def _create_report_data(
+def _create_report_data_events(
     events_dict: dict[model.EventType, Iterable[model.CalendarEventMetaData]]
-) -> ReportData:
+) -> tuple[EventReportData, ...]:
     events: Collection[EventReportData] = list()
     for event_type, event_type_data in config.config["event"]["types"].items():
         events_data = tuple(events_dict.get(event_type, tuple()))
@@ -43,7 +50,31 @@ def _create_report_data(
                 ),
             )
         )
-    return ReportData(current_date=datetime.date.today(), events=tuple(events))
+    return tuple(events)
+
+
+def _create_report_data_unknown_events(
+    events_dict: dict[model.EventType, Iterable[model.CalendarEventMetaData]]
+) -> tuple[UnknownEventReportData]:
+    unknown_events: Collection[UnknownEventReportData] = list()
+    if model.CalendarEventMetaData.UNKNOWN_TYPE not in events_dict:
+        return tuple()
+    for event in events_dict[model.CalendarEventMetaData.UNKNOWN_TYPE]:
+        unknown_events.append(
+            UnknownEventReportData(event.data.summary, event.data.start.date())
+        )
+    return tuple(unknown_events)
+
+
+def _create_report_data(
+    events_dict: dict[model.EventType, Iterable[model.CalendarEventMetaData]]
+) -> ReportData:
+
+    return ReportData(
+        current_date=datetime.date.today(),
+        events=_create_report_data_events(events_dict),
+        unknown_events=_create_report_data_unknown_events(events_dict),
+    )
 
 
 def _generate_rendered_report_lines(data: ReportData) -> Iterator[str]:

@@ -46,27 +46,27 @@ def _replace_with_first_day_of_the_year(date: datetime.datetime) -> datetime.dat
     )
 
 
-def get_past_year_events() -> Iterator[model.CalendarEvent]:
+def retrieve_past_year_events() -> Iterator[model.CalendarEvent]:
     """Retrieves the events that have taken place since the start of the current year
 
     Raises:
         googleapiclient.errors.HttpError
     """
     current_time = datetime.datetime.utcnow()
-    yield from get_events(
+    yield from retrieve_events(
         start_date=_replace_with_first_day_of_the_year(current_time),
         end_date=current_time,
     )
 
 
-def get_current_year_events() -> Iterator[model.CalendarEvent]:
+def retrieve_current_year_events() -> Iterator[model.CalendarEvent]:
     """Retrieves all of the current year events
 
     Raises:
         googleapiclient.errors.HttpError
     """
     current_time = datetime.datetime.utcnow()
-    yield from get_events(
+    yield from retrieve_events(
         start_date=_replace_with_first_day_of_the_year(current_time),
         end_date=_replace_with_first_day_of_the_year(
             current_time.replace(year=current_time.year + 1)
@@ -74,7 +74,7 @@ def get_current_year_events() -> Iterator[model.CalendarEvent]:
     )
 
 
-def get_events(
+def retrieve_events(
     start_date: datetime.datetime, end_date: datetime.datetime
 ) -> Iterator[model.CalendarEvent]:
     """Retrieves the events that have taken place between `start_date` and `end_date`
@@ -104,4 +104,4 @@ def get_events(
 if __name__ == "__main__":
     from pprint import pprint
 
-    pprint(get_past_year_events())
+    pprint(retrieve_past_year_events())

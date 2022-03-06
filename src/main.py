@@ -59,7 +59,7 @@ def extract_metadata(event: model.CalendarEvent) -> model.CalendarEventMetaData:
 
 
 def main():
-    events_dict = classify_by_type(service.get_past_year_events())
+    events_dict = classify_by_type(service.retrieve_past_year_events())
     report.generate_report(events_dict)
 
 

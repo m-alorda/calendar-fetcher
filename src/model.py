@@ -1,9 +1,11 @@
 import dataclasses
 import datetime
-from typing import ClassVar
+from typing import ClassVar, TypeAlias
 
 import dataclasses_json
 import dateutil.parser
+
+EventType: TypeAlias = str
 
 
 def _create_datetime_field() -> datetime.datetime:
@@ -47,9 +49,9 @@ class CalendarEvent(dataclasses_json.DataClassJsonMixin):
 
 @dataclasses.dataclass(frozen=True)
 class CalendarEventMetaData:
-    UNKNOWN_TYPE: ClassVar[str] = "unknown"
+    UNKNOWN_TYPE: ClassVar[EventType] = "unknown"
 
     data: CalendarEvent
     normalized_summary: str
-    type: str = UNKNOWN_TYPE
+    type: EventType = UNKNOWN_TYPE
     assigned_person: str | None = None

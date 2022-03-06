@@ -1,16 +1,35 @@
 event:
   search:
+    # Regular expression used to extract the type and assigned person from an event summary
     re: "Pineo( - (?P<type>(\\w+\\s+)+)(\\((?P<assigned_person>\\w+)\\))?)?"
     type_group: type
     assigned_person_group: assigned_person
-  # Types should be in lower case and ascii characters
+  # Types should be in lower case and ASCII characters
   types:
-    - tic
-    - genero
-    - salud
-    - inclusion social
-    - institucional
-    - medioambiente
-    - taller participacion
-    - cooperacion internacional
-    - taller de habilidades sociales
+    tic:
+      annual_minimum: 4
+      readable_name: TIC
+    genero:
+      annual_minimum: 5
+      readable_name: Género
+    salud:
+      annual_minimum: 4
+      readable_name: Salud
+    inclusion_social:
+      annual_minimum: 5
+      readable_name: Inclusión Social
+    institucional:
+      annual_minimum: 3
+      readable_name: Institucional
+    medio_ambiente:
+      annual_minimum: 4
+      readable_name: Medio Ambiente
+    taller_participacion:
+      annual_minimum: 2
+      readable_name: Taller de Participación
+    cooperacion_internacional:
+      annual_minimum: 4
+      readable_name: Cooperación Internacional
+    taller_habilidades_sociales:
+      annual_minimum: 3
+      readable_name: Taller de Habilidades Sociales

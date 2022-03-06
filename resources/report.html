@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>CRJ Pineo {{current_date}}</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
+    <script src='main.js'></script>
+</head>
+
+<body>
+    <h1>CRJ Pineo</h1>
+    <p>Actividades desarrolladas hasta el día {{ data.current_date }}</p>
+    <table>
+        <tr>
+            <th>Objetivo</th>
+            <th>Sesiones</th>
+            <th>Fechas</th>
+        </tr>
+        {% for event in data.events %}
+        <tr>
+            <td>{{ event.readable_name }}</td>
+            <td>{{ event.current_progress }} / {{ event.annual_minimum }}</td>
+            <td>
+                <ul>
+                    {% for event_date in event.dates %}
+                    <li>{{ event_date }}</li>
+                    {% endfor %}
+                </ul>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+
+</html>

@@ -1,5 +1,5 @@
 import datetime
-from typing import Iterable, Iterator
+from typing import Any, Iterable, Iterator
 
 import googleapiclient.discovery
 import google.oauth2.service_account
@@ -62,7 +62,7 @@ def get_past_year_events() -> Iterator[model.CalendarEvent]:
         "calendar", "v3", credentials=_get_api_credentials(_API_SCOPES)
     )
 
-    event_dicts = (
+    event_dicts: Iterator[dict[str, Any]] = (
         service.events()
         .list(
             calendarId=config.secret_config["calendarId"],
@@ -72,7 +72,7 @@ def get_past_year_events() -> Iterator[model.CalendarEvent]:
             orderBy="startTime",
         )
         .execute()
-        .get("items", [])
+        .get("items", tuple())
     )
     return map(model.CalendarEvent.from_dict, event_dicts)
 

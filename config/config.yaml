@@ -1,7 +1,7 @@
 event:
   search:
     # Regular expression used to extract the type and assigned person from an event summary
-    re: "Pineo( - (?P<type>(\\w+\\s+)+)(\\((?P<assigned_person>\\w+)\\))?)?"
+    re: "Pineo( - (?P<type>(\\w+\\s+)+)(\\((?P<assigned_person>[\\w\\s/]+)\\))?)?"
     type_group: type
     assigned_person_group: assigned_person
   # Types should be in lower case and ASCII characters

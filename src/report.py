@@ -48,7 +48,7 @@ def _create_report_data(
 
 def _generate_rendered_report_lines(data: ReportData) -> Iterator[str]:
     env = jinja2.Environment(
-        loader=jinja2.FileSystemLoader(config.PROJECT_DIR / "resources"),
+        loader=jinja2.FileSystemLoader(config.RESOURCES_DIR),
         autoescape=jinja2.select_autoescape(),
         trim_blocks=True,
         lstrip_blocks=True,

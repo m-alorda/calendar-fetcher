@@ -1,0 +1,46 @@
+{
+	"name": "calendar-fetcher",
+	"build": {
+		"context": "..",
+		"dockerfile": "Dockerfile"
+	},
+	"extensions": [
+		"CoenraadS.bracket-pair-colorizer-2",
+		"streetsidesoftware.code-spell-checker",
+		"donjayamanne.githistory",
+		"eamodio.gitlens",
+		"ecmel.vscode-html-css",
+		"tht13.html-preview-vscode",
+		"abusaidm.html-snippets",
+		"yzhang.markdown-all-in-one",
+		"esbenp.prettier-vscode",
+		"ms-python.vscode-pylance",
+		"ms-python.python",
+		"streetsidesoftware.code-spell-checker-spanish",
+		"ms-azuretools.vscode-docker",
+		"richie5um2.vscode-sort-json",
+		"Gruntfuggly.todo-tree"
+	],
+	"settings": {
+		"[html]": {
+			"editor.defaultFormatter": "esbenp.prettier-vscode"
+		},
+		"[json]": {
+			"editor.defaultFormatter": "vscode.json-language-features"
+		},
+		"[jsonc]": {
+			"editor.defaultFormatter": "vscode.json-language-features"
+		},
+		"[markdown]": {
+			"editor.defaultFormatter": "esbenp.prettier-vscode"
+		},
+		"bracket-pair-colorizer-2.depreciation-notice": false,
+		"cSpell.language": "en,es-ES",
+		"editor.formatOnSave": true,
+		"editor.suggestSelection": "first",
+		"git.autofetch": true,
+		"python.analysis.typeCheckingMode": "basic",
+		"python.formatting.provider": "black",
+		"terminal.integrated.defaultProfile.linux": "bash",
+	}
+}

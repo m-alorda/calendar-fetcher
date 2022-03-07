@@ -5,7 +5,6 @@ from typing import Collection, Iterable, Iterator
 
 import jinja2
 import pipe
-import xhtml2pdf.pisa
 
 import config
 import model
@@ -104,15 +103,7 @@ def generate_html_report(
 def generate_report(
     events_dict: dict[model.EventType, Iterable[model.CalendarEventMetaData]],
 ) -> Path:
+    # TODO: Generate pdf report with weasyprint
     tmp_html_report_path = generate_html_report(events_dict)
-    dest_file_path = tmp_html_report_path.with_suffix(".pdf")
-    with (
-        tmp_html_report_path.open(encoding="utf-8") as src_file,
-        dest_file_path.open("wb") as dest_file,
-    ):
-        # TODO Fix bootstrap not loading correctly on xhtml2pdf: 
-        # "Selector name or qualifier expected:: ('', '\'@charset "UTF-8";:r')"
-        xhtml2pdf.pisa.CreatePDF(src_file, dest_file)
-    # TODO Delete the temporary file once the pdf report has been created
-    # tmp_html_report_path.unlink()
-    return dest_file_path
+
+    return tmp_html_report_path

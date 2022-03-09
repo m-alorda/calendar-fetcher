@@ -2,8 +2,16 @@
 	"name": "calendar-fetcher",
 	"build": {
 		"context": "..",
-		"dockerfile": "Dockerfile"
+		"dockerfile": "Dockerfile",
+		"args": {
+			"USERNAME": "calendar-fetcher"
+		}
 	},
+	"mounts": [
+		// Cache vscode extensions so they are not downloaded on image rebuilds
+		"source=calendar-fetcher-vscode-extensions,target=/home/calendar-fetcher/.vscode-server/extensions,type=volume",
+		"source=calendar-fetcher-vscode-extensions-insiders,target=/home/calendar-fetcher/.vscode-server-insiders/extensions,type=volume",
+	],
 	"extensions": [
 		"CoenraadS.bracket-pair-colorizer-2",
 		"streetsidesoftware.code-spell-checker",

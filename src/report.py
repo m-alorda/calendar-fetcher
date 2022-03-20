@@ -5,6 +5,7 @@ from typing import Collection, Iterable, Iterator
 
 import jinja2
 import pipe
+import weasyprint
 
 import config
 import model
@@ -94,6 +95,7 @@ def generate_html_report(
     dest_dir = config.PROJECT_DIR / "reports"
     dest_dir.mkdir(exist_ok=True)
     dest_file = dest_dir / f"report-{data.current_date}.html"
+    # TODO: If dest_file exists, do not overwrite it
     with dest_file.open("w", encoding="utf-8") as f:
         for line in _generate_rendered_report_lines(data):
             f.write(line)
@@ -103,7 +105,9 @@ def generate_html_report(
 def generate_report(
     events_dict: dict[model.EventType, Iterable[model.CalendarEventMetaData]],
 ) -> Path:
-    # TODO: Generate pdf report with weasyprint
     tmp_html_report_path = generate_html_report(events_dict)
-
+    pdf_report_path = tmp_html_report_path.with_suffix(".pdf")
+    html = weasyprint.HTML(filename=tmp_html_report_path)
+    html.write_pdf(target=pdf_report_path)
+    tmp_html_report_path.unlink()
     return tmp_html_report_path

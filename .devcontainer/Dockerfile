@@ -26,19 +26,15 @@ RUN apk update && \
 COPY .devcontainer/.bashrc /root/.bashrc
 COPY .devcontainer/.bashrc /home/${USERNAME}/.bashrc
 
-# Fonts for weasyprint
-RUN wget https://github.com/google/fonts/archive/main.tar.gz -O gf.tar.gz && \
-    tar -xf gf.tar.gz && \
-    mkdir -p /usr/share/fonts/truetype/google-fonts && \
-    find $PWD/fonts-main/ -name "*.ttf" -exec install -m644 {} /usr/share/fonts/truetype/google-fonts/ \; || return 1 && \
-    rm -f gf.tar.gz && \
-    # Remove the extracted fonts directory
-    rm -rf $PWD/fonts-main && \
+# weasyprint fonts
+RUN apk add msttcorefonts-installer fontconfig && \
+    update-ms-fonts && \
+    fc-cache -f && \
     rm -rf /var/cache/*
-
 # weasyprint runtime dependencies
 RUN apk add py3-pillow py3-cffi py3-brotli pango && \
     rm -rf /var/cache/*
+
 # Install python requirements
 COPY requirements.txt /requirements.txt
 RUN apk add --virtual .build-deps gcc musl-dev python3-dev libffi-dev zlib-dev jpeg-dev && \

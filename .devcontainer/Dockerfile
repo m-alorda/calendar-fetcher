@@ -15,16 +15,17 @@ RUN mkdir -p /home/${USERNAME}/.vscode-server/extensions && \
     chown -R ${USERNAME}:${USER_GROUP} /home/${USERNAME}/.vscode-server-insiders
 
 # Base dependencies
-RUN apk update && apk upgrade
-RUN python3 -m pip install --upgrade pip
-RUN apk add bash git
+RUN apk update && \
+    apk upgrade && \
+    apk add bash git && \
+    python3 -m pip install --upgrade pip && \
+    python3 -m pip cache purge && \
+    rm -rf /var/cache/*
 
 # Configure bash
 COPY .devcontainer/.bashrc /root/.bashrc
 COPY .devcontainer/.bashrc /home/${USERNAME}/.bashrc
 
-# Compile dependencies for weasyprint
-RUN apk add py3-pillow py3-cffi py3-brotli gcc musl-dev python3-dev pango libffi-dev zlib-dev jpeg-dev
 # Fonts for weasyprint
 RUN wget https://github.com/google/fonts/archive/main.tar.gz -O gf.tar.gz && \
     tar -xf gf.tar.gz && \
@@ -33,14 +34,18 @@ RUN wget https://github.com/google/fonts/archive/main.tar.gz -O gf.tar.gz && \
     rm -f gf.tar.gz && \
     # Remove the extracted fonts directory
     rm -rf $PWD/fonts-main && \
-    rm -rf /var/cache/* && \
-    fc-cache -f
+    rm -rf /var/cache/*
 
-# Install python dependencies
+# weasyprint runtime dependencies
+RUN apk add py3-pillow py3-cffi py3-brotli pango && \
+    rm -rf /var/cache/*
+# Install python requirements
 COPY requirements.txt /requirements.txt
-RUN python3 -m pip install -r /requirements.txt
-
-# TODO: remove weasyprint compile dependencies
+RUN apk add --virtual .build-deps gcc musl-dev python3-dev libffi-dev zlib-dev jpeg-dev && \
+    python3 -m pip install -r /requirements.txt && \
+    apk del .build-deps && \
+    python3 -m pip cache purge && \
+    rm -rf /var/cache/*
 
 CMD [ "bash" ]
 

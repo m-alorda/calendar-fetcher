@@ -152,4 +152,4 @@ def generate_report(
     html.write_pdf(target=pdf_report_path)
     tmp_html_report_path.unlink()
 
-    return tmp_html_report_path
+    return pdf_report_path

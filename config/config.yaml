@@ -1,3 +1,5 @@
+log:
+  config_file: config/logging.yaml
 event:
   search:
     # Regular expression used to extract the type and assigned person from an event summary

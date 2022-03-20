@@ -1,4 +1,5 @@
 from pathlib import Path
+import logging.config
 
 import yaml
 
@@ -13,3 +14,9 @@ with _SECRET_CONFIG_FILE.open(encoding="utf-8") as f:
 
 with _CONFIG_FILE.open(encoding="utf-8") as f:
     config = yaml.safe_load(f)
+
+_LOGGING_CONFIG_FILE = PROJECT_DIR / config["log"]["config_file"]
+with _LOGGING_CONFIG_FILE.open() as f:
+    _logging_config = yaml.safe_load(f)
+
+logging.config.dictConfig(_logging_config)

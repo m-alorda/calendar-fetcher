@@ -1,5 +1,6 @@
 import dataclasses
 import datetime
+import logging
 from typing import ClassVar, TypeAlias
 
 import dataclasses_json
@@ -8,11 +9,15 @@ import dateutil.parser
 EventType: TypeAlias = str
 
 
+log = logging.getLogger()
+
+
 def _create_datetime_field() -> datetime.datetime:
     def datetime_encoder(date: datetime.datetime):
         return date.isoformat() + "Z"
 
     def datetime_decoder(date_obj: dict | str):
+        log.debug("Decoding date %s", date_obj)
         if isinstance(date_obj, dict):
             if "dateTime" in date_obj:
                 date_str = date_obj["dateTime"]
@@ -20,6 +25,7 @@ def _create_datetime_field() -> datetime.datetime:
                 date_str = date_obj["date"]
         else:
             date_str = date_obj
+        log.debug("Date str to decode is %s", date_str)
         return dateutil.parser.parse(date_str)
 
     return dataclasses.field(

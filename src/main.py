@@ -1,21 +1,25 @@
 import re
 from typing import Iterable, Iterator
+import logging
 
 import unidecode
 import pipe
 
+import config
 import service
 import model
-import config
 import report
 
+
 SEARCH_PATTERN = re.compile(config.config["event"]["search"]["re"], re.IGNORECASE)
+
+log = logging.getLogger()
 
 
 def classify_by_type(
     events: Iterator[model.CalendarEvent],
 ) -> dict[model.EventType, Iterable[model.CalendarEventMetaData]]:
-
+    log.debug("Classifying events by type")
     classified_events = (
         events
         | pipe.map(extract_metadata)
@@ -26,6 +30,8 @@ def classify_by_type(
 
 
 def extract_metadata(event: model.CalendarEvent) -> model.CalendarEventMetaData:
+    log.debug("Extracting metadata from %s", event)
+
     def normalize_summary(summary: str) -> str:
         return unidecode.unidecode(summary).lower()
 
@@ -41,6 +47,7 @@ def extract_metadata(event: model.CalendarEvent) -> model.CalendarEventMetaData:
         return value.strip()
 
     normalized_summary = normalize_summary(event.summary)
+    log.debug("Normalized summay is '%s'", normalized_summary)
 
     type = extract(
         normalized_summary,
@@ -49,18 +56,22 @@ def extract_metadata(event: model.CalendarEvent) -> model.CalendarEventMetaData:
     )
     assert type is not None
     type = type.replace(" ", "_")
+    log.debug("Event type is '%s'", type)
 
     assigned_person = extract(
         normalized_summary,
         group_name=config.config["event"]["search"]["assigned_person_group"],
     )
+    log.debug("Assigned person is '%s'", assigned_person)
 
     return model.CalendarEventMetaData(event, normalized_summary, type, assigned_person)
 
 
 def main():
+    log.info("Generating a report with past year events")
     events_dict = classify_by_type(service.retrieve_past_year_events())
-    report.generate_report(events_dict)
+    generated_report = report.generate_report(events_dict)
+    log.info("Generated report: %s", generated_report)
 
 
 if __name__ == "__main__":

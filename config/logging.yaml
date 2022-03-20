@@ -1,0 +1,30 @@
+version: 1
+formatters:
+  logFormatter:
+    format: "%(asctime)s [%(levelname)s] (%(name)s) %(funcName)s - %(message)s"
+handlers:
+  console:
+    class: logging.StreamHandler
+    formatter: logFormatter
+  file:
+    class: logging.handlers.RotatingFileHandler
+    formatter: logFormatter
+    filename: ./logs/calendar-fetcher.log
+    maxBytes: 10_485_760
+    backupCount: 3
+loggers:
+  googleapiclient:
+    level: ERROR
+  google_auth_httplib2:
+    level: ERROR
+  # TODO: weasyprint logging configuration is not being correctly overridden
+  weasyprint:
+    level: ERROR
+  fontTools:
+    level: ERROR
+root:
+  level: DEBUG
+  handlers:
+    - console
+    - file
+disable_existing_loggers: false

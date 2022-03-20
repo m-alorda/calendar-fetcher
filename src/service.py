@@ -1,5 +1,6 @@
 import datetime
 from typing import Any, Iterable, Iterator
+import logging
 
 import googleapiclient.discovery
 import google.oauth2.service_account
@@ -10,6 +11,8 @@ import config
 
 # If modifying these scopes, delete the file token.json.
 _API_SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"]
+
+log = logging.getLogger()
 
 
 def _get_api_credentials(
@@ -25,6 +28,7 @@ def _get_api_credentials(
         The credentials object used to authenticate
     """
     path_to_creds = config.PROJECT_DIR / "secrets/calendar-fetcher-creds.json"
+    log.debug("Creating API crendetials from file '%s'", path_to_creds)
     return google.oauth2.service_account.Credentials.from_service_account_file(
         path_to_creds,
         scopes=scopes,
@@ -52,6 +56,7 @@ def retrieve_past_year_events() -> Iterator[model.CalendarEvent]:
     Raises:
         googleapiclient.errors.HttpError
     """
+    log.debug("Retrieving past year events")
     current_time = datetime.datetime.utcnow()
     yield from retrieve_events(
         start_date=_replace_with_first_day_of_the_year(current_time),
@@ -65,6 +70,7 @@ def retrieve_current_year_events() -> Iterator[model.CalendarEvent]:
     Raises:
         googleapiclient.errors.HttpError
     """
+    log.debug("Retrieving current year events")
     current_time = datetime.datetime.utcnow()
     yield from retrieve_events(
         start_date=_replace_with_first_day_of_the_year(current_time),
@@ -82,6 +88,7 @@ def retrieve_events(
     Raises:
         googleapiclient.errors.HttpError
     """
+    log.info("Retrieving events from %s to %s", start_date, end_date)
     service = googleapiclient.discovery.build(
         "calendar", "v3", credentials=_get_api_credentials(_API_SCOPES)
     )

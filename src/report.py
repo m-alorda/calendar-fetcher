@@ -1,5 +1,6 @@
 import dataclasses
 import datetime
+import logging
 from pathlib import Path
 from typing import Collection, Iterable, Iterator
 import uuid
@@ -10,6 +11,8 @@ import weasyprint
 
 import config
 import model
+
+log = logging.getLogger()
 
 
 @dataclasses.dataclass(frozen=True)
@@ -79,6 +82,7 @@ def _create_report_data(
 
 
 def _generate_rendered_report_lines(data: ReportData) -> Iterator[str]:
+    log.debug("Rendering report")
     env = jinja2.Environment(
         loader=jinja2.FileSystemLoader(config.RESOURCES_DIR),
         autoescape=jinja2.select_autoescape(),
@@ -99,6 +103,11 @@ def _get_report_file_path(filename: str, extension: str) -> Path:
     Returns:
         A non existent path starting with `filename` and ending with `extension`
     """
+    log.debug(
+        "Getting non existing file path for report with filename='%s' and extension='%s'",
+        filename,
+        extension,
+    )
     dest_dir = config.PROJECT_DIR / "reports"
     dest_dir.mkdir(exist_ok=True)
 
@@ -106,12 +115,14 @@ def _get_report_file_path(filename: str, extension: str) -> Path:
     while dest_file.exists():
         dest_file = dest_dir / f"{filename}_{uuid.uuid4()}{extension}"
 
+    log.debug("Found non existing file path: %s", dest_file)
     return dest_file
 
 
 def generate_html_report(
     events_dict: dict[model.EventType, Iterable[model.CalendarEventMetaData]],
 ) -> Path:
+    log.debug("Generating html report")
     data = _create_report_data(events_dict)
 
     dest_file = _get_report_file_path(
@@ -129,6 +140,7 @@ def generate_html_report(
 def generate_report(
     events_dict: dict[model.EventType, Iterable[model.CalendarEventMetaData]],
 ) -> Path:
+    log.debug("Generating pdf report")
     tmp_html_report_path = generate_html_report(events_dict)
 
     pdf_report_path = _get_report_file_path(
@@ -139,5 +151,5 @@ def generate_report(
     html = weasyprint.HTML(filename=tmp_html_report_path)
     html.write_pdf(target=pdf_report_path)
     tmp_html_report_path.unlink()
-    
+
     return tmp_html_report_path

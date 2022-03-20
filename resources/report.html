@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title>CRJ Pineo {{current_date}}</title>
+    <title>CRJ Pineo - Objetivos hasta {{ data.current_date }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
@@ -19,51 +19,59 @@
       <h2 class="h2">
         Objetivos cumplidos hasta el día {{ data.current_date }}
       </h2>
-      <table class="table table-hover table-striped">
-        <tr>
-          <th>Objetivo</th>
-          <th>Sesiones</th>
-          <th>Fechas</th>
-        </tr>
-        {% for event in data.events %}
-        <tr>
-          <td>{{ event.readable_name }}</td>
-          <td>
-            <span>
-              {{ event.current_progress }} / {{ event.annual_minimum }}
-            </span>
-            {% if event.current_progress >= event.annual_minimum %}
-            <span> ✅</span>
-            {% endif %}
-          </td>
-          <td>
-            {% if event.dates|length > 0 %}
-            <ul class="list-group">
-              {% for event_date in event.dates %}
-              <li class="list-group-item">{{ event_date }}</li>
-              {% endfor %}
-            </ul>
-            {% else %}
-            <p class="text-body">-</p>
-            {% endif %}
-          </td>
-        </tr>
-        {% endfor %}
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">Objetivo</th>
+            <th scope="col">Sesiones</th>
+            <th scope="col">Fechas</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for event in data.events %}
+          <tr>
+            <td>{{ event.readable_name }}</td>
+            <td>
+              <span>
+                {{ event.current_progress }} / {{ event.annual_minimum }}
+              </span>
+              {% if event.current_progress >= event.annual_minimum %}
+              <span> ✅</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if event.dates|length > 0 %}
+              <ul class="list-group">
+                {% for event_date in event.dates %}
+                <li class="list-group-item">{{ event_date }}</li>
+                {% endfor %}
+              </ul>
+              {% else %}
+              <p>-</p>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
       </table>
       {% if data.unknown_events|length > 0 %}
       <div class="container">
         <h2 class="h2">Otras actividades</h2>
-        <table class="table table-hover table-striped">
-          <tr>
-            <th>Nombre</th>
-            <th>Fecha</th>
-          </tr>
-          {% for unknown_event in data.unknown_events %}
-          <tr>
-            <td>{{ unknown_event.summary }}</td>
-            <td>{{ unknown_event.date }}</td>
-          </tr>
-          {% endfor %}
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">Nombre</th>
+              <th scope="col">Fecha</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for unknown_event in data.unknown_events %}
+            <tr>
+              <td>{{ unknown_event.summary }}</td>
+              <td>{{ unknown_event.date }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
         </table>
       </div>
       {% endif %}

@@ -2,6 +2,7 @@ import dataclasses
 import datetime
 from pathlib import Path
 from typing import Collection, Iterable, Iterator
+import uuid
 
 import jinja2
 import pipe
@@ -88,17 +89,40 @@ def _generate_rendered_report_lines(data: ReportData) -> Iterator[str]:
     yield from template.generate(data=data)
 
 
+def _get_report_file_path(filename: str, extension: str) -> Path:
+    """Generates a file_path with the given filename and extension, ensuring the file does not already exist
+
+    Args:
+        filename: The desired filename
+        extension: The file extension. E.g. `.html`
+
+    Returns:
+        A non existent path starting with `filename` and ending with `extension`
+    """
+    dest_dir = config.PROJECT_DIR / "reports"
+    dest_dir.mkdir(exist_ok=True)
+
+    dest_file = dest_dir / f"{filename}{extension}"
+    while dest_file.exists():
+        dest_file = dest_dir / f"{filename}_{uuid.uuid4()}{extension}"
+
+    return dest_file
+
+
 def generate_html_report(
     events_dict: dict[model.EventType, Iterable[model.CalendarEventMetaData]],
 ) -> Path:
     data = _create_report_data(events_dict)
-    dest_dir = config.PROJECT_DIR / "reports"
-    dest_dir.mkdir(exist_ok=True)
-    dest_file = dest_dir / f"report-{data.current_date}.html"
-    # TODO: If dest_file exists, do not overwrite it
+
+    dest_file = _get_report_file_path(
+        filename=f"report-{data.current_date}",
+        extension=".html",
+    )
+
     with dest_file.open("w", encoding="utf-8") as f:
         for line in _generate_rendered_report_lines(data):
             f.write(line)
+
     return dest_file
 
 
@@ -106,8 +130,14 @@ def generate_report(
     events_dict: dict[model.EventType, Iterable[model.CalendarEventMetaData]],
 ) -> Path:
     tmp_html_report_path = generate_html_report(events_dict)
-    pdf_report_path = tmp_html_report_path.with_suffix(".pdf")
+
+    pdf_report_path = _get_report_file_path(
+        filename=tmp_html_report_path.stem,
+        extension=".pdf",
+    )
+
     html = weasyprint.HTML(filename=tmp_html_report_path)
     html.write_pdf(target=pdf_report_path)
     tmp_html_report_path.unlink()
+    
     return tmp_html_report_path

@@ -21,18 +21,19 @@ class EventReportData:
     readable_name: str
     current_progress: int
     annual_minimum: int
-    dates: tuple[datetime.date, ...]
+    # TODO add author to report
+    dates: tuple[str, ...]
 
 
 @dataclasses.dataclass(frozen=True)
 class UnknownEventReportData:
     summary: str
-    date: datetime.date
+    date: str
 
 
 @dataclasses.dataclass(frozen=True)
 class ReportData:
-    current_date: datetime.date
+    current_date: str
     events: tuple[EventReportData, ...]
     unknown_events: tuple[UnknownEventReportData, ...]
 
@@ -50,7 +51,12 @@ def _create_report_data_events(
                 current_progress=len(events_data),
                 annual_minimum=event_type_data["annual_minimum"],
                 dates=tuple(
-                    events_data | pipe.map(lambda event: event.data.start.date())
+                    events_data
+                    | pipe.map(
+                        lambda event: event.data.start.strftime(
+                            config.config["report"]["date_format"]
+                        )
+                    )
                 ),
             )
         )
@@ -65,7 +71,10 @@ def _create_report_data_unknown_events(
         return tuple()
     for event in events_dict[model.CalendarEventMetaData.UNKNOWN_TYPE]:
         unknown_events.append(
-            UnknownEventReportData(event.data.summary, event.data.start.date())
+            UnknownEventReportData(
+                event.data.summary,
+                event.data.start.strftime(config.config["report"]["date_format"]),
+            )
         )
     return tuple(unknown_events)
 
@@ -75,7 +84,9 @@ def _create_report_data(
 ) -> ReportData:
 
     return ReportData(
-        current_date=datetime.date.today(),
+        current_date=datetime.date.today().strftime(
+            config.config["report"]["date_format"]
+        ),
         events=_create_report_data_events(events_dict),
         unknown_events=_create_report_data_unknown_events(events_dict),
     )
@@ -126,7 +137,7 @@ def generate_html_report(
     data = _create_report_data(events_dict)
 
     dest_file = _get_report_file_path(
-        filename=f"report-{data.current_date}",
+        filename=f"report-{datetime.date.today()}",
         extension=".html",
     )
 

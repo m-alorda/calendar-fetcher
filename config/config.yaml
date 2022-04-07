@@ -35,3 +35,6 @@ event:
     taller_habilidades_sociales:
       annual_minimum: 3
       readable_name: Taller de Habilidades Sociales
+report:
+  # For supported formats, see <https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes>
+  date_format: "%d/%m/%Y"
